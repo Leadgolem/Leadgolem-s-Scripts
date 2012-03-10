@@ -11,7 +11,7 @@ function PREFIX {
 $1
 echo "Prefix set to $PREFIX"
 #Gets the names of the files in the current directory, then generates names without the input prefix.
-for NAME in `dir -d *` ; do
+for NAME in ./* ; do
 GOODNAME=${NAME#$PREFIX}
 #Renames the files to the names without the input prefix.
 echo "Renaming $NAME to $GOODNAME"
