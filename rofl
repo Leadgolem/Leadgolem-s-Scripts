@@ -1,0 +1,17 @@
+#!/bin/bash
+
+function number {
+RANGE=2
+number=$RANDOM
+let "number %= $RANGE"
+}
+number
+
+if [ "$number" = "1" ]; then
+	echo "I think I rofled my waffles..."
+else
+	echo "ROFLs have rrrrrrridges"
+fi
+exit
+
+

@@ -1,0 +1,122 @@
+#!/bin/bash
+#pdftohtlm -nodrm filename
+#mogrify -flip *.jpg
+#mogrify -flip *.png
+#convert -append filename-1_*.jpg 1.jpg
+#convert -append filename-1_*.png 1.jpg
+#5902364--Underground-Homes-1_*.jpg
+
+function HELP {
+echo "Options
+	--[h]elp Display this message and exit.
+	--[p]ng stitch together .png files.
+	--[j]pg stitch together .jpg files."
+echo
+echo "You need to specify the number of pages in your document as well as the file name in order to run this script.
+PAGES=The number of pages in your document.  This defines the end point for processing.
+FILE=Specifies the name of the files to be used.  In this case specify the filename of the html file without the extension.  IE: bobiesstuff.html becomes bobiesstuff.  This will be used as the output filename with the page number appended to the end.  IE: bobiesstuff_1.png
+
+EXAMPLE: pdffixem PAGES=150 FILE=bobbiesstuff -p
+The above would process a 150 page pdftohtml set of images, as long as all the images are in png format.  
+
+You can also specify what page to start on.  Setting a PAGES to a number lower then the actual number of pages will specify an end point.  So you can use START and PAGES to define a range of pages to stitch together.
+Because of the way bash lists nummerical file names without a leading zero this script will not work correctly with images being stitched together over nine without a leading 0 in the image name.  IE: bobbiesstuff-1_10.png would be used as the first image in the stitching and bobbiesstuff-1_1.png would be used as the second image.  If the filename has a leading zere then this is not a problem.  IE: bobbiesstuff-1_01.png would be used first and bobbiesstuff-1_10.png would be used correctly in sequence."
+}
+
+#Define image file name
+function FILE {
+$1
+echo filename set to $FILE
+}
+
+#Define how many pages you want converted
+function PAGES {
+$1
+echo "Number of pages in document set to $PAGES"
+#PAGES variable should be +1 to actual number of pages for proper processing.
+PAGES=$((PAGES+1))
+}
+#Set start page
+function START {
+$1
+echo start page set to $START
+}
+#Stitch together png files
+function PNG {
+if [ -n "$FILE" ]
+	then
+	if [ -n "$PAGES" ]
+		then
+		if [ -n "$START" ]
+			then
+				while [  $START -lt $PAGES ]; do
+					convert -append "$FILE"-"$START"_*.png "$FILE"_"$START".png
+					echo "Stitching page $START"
+					START=$((START+1)) 
+				done
+			else
+				START=1
+				while [  $START -lt $PAGES ]; do
+					convert -append "$FILE"-"$START"_*.png "$FILE"_"$START".png
+					echo "Stitching page $START"
+					START=$((START+1)) 
+				done
+		fi
+		else
+		echo "No number of pages set, skipping."
+	fi
+	else
+	echo "No filename specified, skipping."
+fi
+}
+
+#Stitch together jpg files
+function JPG {
+if [ -n "$FILE" ]
+	then
+	if [ -n "$PAGES" ]
+		then
+		if [ -n "$START" ]
+			then
+				while [  $START -lt $PAGES ]; do
+					convert -append "$FILE"-"$START"_*.jpg "$FILE"_"$START".jpg
+					echo "Stitching page $START"
+					START=$((START+1)) 
+				done
+			else
+				START=1
+				while [  $START -lt $PAGES ]; do
+					convert -append "$FILE"-"$START"_*.jpg "$FILE"_"$START".jpg
+					echo "Stitching page $START"
+					START=$((START+1)) 
+				done
+		fi
+		else
+		echo "No number of pages set, skipping."
+	fi
+	else
+	echo "No filename specified, skipping."
+fi
+}
+
+#Accept cli input
+if [ $# -gt 0 ]
+then
+	for flist in `seq 1 $#`
+	do
+		case $1 in
+			FILE=*) export $1;FILE;;
+			START=*) export $1;START;;
+			PAGES=*) export $1;PAGES;;
+			-h | help | --help) HELP;;
+			-p | --png) PNG;;
+			-j | --jpg) JPG;;
+		esac
+		shift
+	done
+else
+	HELP
+fi
+
+exit
+

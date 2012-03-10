@@ -1,0 +1,35 @@
+#!/bin/bash
+sandbox=$HOME/sandbox
+
+function all {
+svg
+}
+
+function svg {
+echo "Copying svg files to sandbox."
+find ./ -type f -iname *\.svg -exec /bin/cp -P {} $sandbox \;
+}
+
+function help {
+echo "Options
+	--[a]ll Do all of the below, except help.
+	--[s]vg Copy all svg files in current folder to sandbox recursively, ignore links.
+	--[h]elp Display this message and exit."
+}
+
+#Evaluate arguments.
+if [ $# -gt 0 ]
+then
+	for flist in `seq 1 $#`
+	do
+		case $1 in
+			-a | --all) all;;
+			-s | --svg) svn;;
+			-h | --help | help) help;;
+		esac
+		shift
+	done
+else
+	HELP
+fi
+exit

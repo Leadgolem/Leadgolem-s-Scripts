@@ -1,0 +1,38 @@
+#!/bin/bash
+#Help function, duh...
+function HELP {
+echo "This script uses pattern recognition to remove a user input prefix from a filename.  You must specify what prefix is to be removed, and run this script in the same folder as the files that need to have the prefix removed.
+
+unprefix PREFIX=yourprefixhere"
+}
+
+function PREFIX {
+#Sets the prefix based on what was entered.
+$1
+echo "Prefix set to $PREFIX"
+#Gets the names of the files in the current directory, then generates names without the input prefix.
+for NAME in `dir -d *` ; do
+GOODNAME=${NAME#$PREFIX}
+#Renames the files to the names without the input prefix.
+echo "Renaming $NAME to $GOODNAME"
+mv ./$NAME ./$GOODNAME
+done
+}
+
+#Handles command line input for the script.
+if [ $# -gt 0 ]
+then
+	for flist in `seq 1 $#`
+	do
+		case $1 in
+			PREFIX=*) export $1;PREFIX;;
+			-h | help | --help) HELP;;
+		esac
+		shift
+	done
+else
+	HELP
+fi
+
+exit
+

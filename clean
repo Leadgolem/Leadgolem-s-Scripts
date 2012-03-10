@@ -1,0 +1,121 @@
+#!/bin/bash
+modeldir=$HOME/blender
+outputdir=$HOME/blender/output
+function all {
+cbackup
+cblendbackup
+cblendout
+cbuild
+ctemp
+cupgrade
+thumbs
+}
+function cbackup {
+echo "Cleaning backups."
+beesu 'find / -name "*~" -exec /bin/rm {} \;'
+}
+function cblendbackup {
+if [ -d "$modeldir" ]
+then
+	echo "Cleaning backup Models."
+	find $modeldir -type f -iname *\.blend1 -exec /bin/rm {} \;
+else
+	echo "Model folder not defined, skipping."
+fi
+
+}
+function cblendout {
+if [ -d "$outputdir" ]
+then
+	echo "Cleaning blender output folder."
+	/bin/rm -rf $outputdir/*
+else
+	echo "Blender output folder not defined, skipping."
+fi
+}
+#Function for cleaning build folders.
+function cbuild {
+echo "Cleaning rpm build folders."
+beesu '/bin/rm -f /usr/src/redhat/SPECS/*'
+beesu '/bin/rm -f /usr/src/redhat/SRPMS/*'
+beesu '/bin/rm -f /usr/src/redhat/SOURCES/*'
+beesu '/bin/rm -rf /usr/src/redhat/BUILD/*'
+beesu '/bin/rm -rf /usr/src/redhat/RPMS/*'
+beesu '/bin/rm -rf /var/tmp/*'
+}
+#/ Build cleaning functions.
+#Temp cleaning functions.
+function ctemp {
+echo "Cleaning temporary files."
+beesu '/bin/rm -rf /home/*/.kde/share/apps/k3b/temp/*'
+beesu '/bin/rm -rf /home/*/.wine/drive_c/windows/temp/*'
+beesu '/bin/rm -rf /home/*/.openoffice.org2.0/usr/temp/*'
+beesu '/bin/rm -rf /var/cache/tomcat5/temp/*'
+beesu '/bin/rm -rf /var/cache/jetty/temp/*'
+beesu '/bin/rm -rf /etc/rhgb/temp/*'
+beesu '/bin/rm -rf /usr/share/tomcat5/temp/*'
+beesu '/bin/rm -rf /usr/share/makehuman/targets/temp/*'
+beesu '/bin/rm -rf /usr/share/jetty/temp/*'
+beesu '/bin/rm -rf /usr/share/pixmaps/makehuman/tgimg/temp/*'
+beesu '/bin/rm -rf /usr/lib64/openoffice.org/presets/temp/*'
+beesu '/bin/rm -rf /root/.wine/drive_c/windows/temp/*'
+beesu '/bin/rm -rf /root/.local/share/Trash/expunged/*'
+beesu '/bin/rm -rf /root/.local/share/Trash/files/*'
+beesu '/bin/rm -rf /root/.local/share/Trash/info/*'
+beesu '/bin/rm -rf /var/tmp/*'
+beesu '/bin/rm -rf /var/spool/cups/tmp/*'
+beesu '/bin/rm -rf /tmp/*'
+beesu '/bin/rm -rf /usr/tmp/*'
+beesu '/bin/rm -rf /root/.gimp-2.4/tmp/*'
+beesu '/bin/rm -rf /home/*/.gimp-2.4/tmp/*'
+beesu '/bin/rm -rf /home/*/.local/share/Trash/expunged/*'
+beesu '/bin/rm -rf /home/*/.local/share/Trash/files/*'
+beesu '/bin/rm -rf /home/*/.local/share/Trash/info/*'
+}
+#/ Temp functions.
+function cupgrade {
+echo "Cleaning all .rpmsave files."
+beesu 'find / -type f -iname *\.rpmsave -exec /bin/rm {} \;'
+echo "Cleaning all .rpmnew files."
+beesu 'find / -type f -iname *\.rpmnew -exec /bin/rm {} \;'
+}
+function thumbs {
+echo "Removing failed thumbnails."
+/bin/rm -rf $HOME/.thumbnails/fail
+}
+function HELP {
+echo "Options
+	--[a]ll Do all of the below.
+	--[b]ackups Removes all files ending with ~.
+	--blendbac[k] Removes all files ending in .blend1 in the model folder.
+	--blend[o]ut Removes all files in the blender output folder.
+	--[r]pm Removes all files in the build folders.
+	--[t]emp Removes all files in the temporary folders.
+	--[u]pgrade Removes all .rpmsave and .rpmnew files.
+	--thumb[s] Remove failed thumbnails
+	--[h]elp Display this message and exit."
+}
+
+#Evaluate arguments.
+if [ $# -gt 0 ]
+then
+	for flist in `seq 1 $#`
+	do
+		case $1 in
+			-a | --all) all;;
+			-b | --backups) cbackup;;
+			-k | --blendback) cblendbackup;;
+			-o | --blendout) cblendout;;
+			-r | --rpm) cbuild;;
+			-t | --temp) ctemp;;
+			-u | --upgrade) cupgrade;;
+			-s | --thumbs) thumbs;;
+			-h | --help | help) HELP;;
+		esac
+		shift
+	done
+else
+	HELP
+fi
+exit
+

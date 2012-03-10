@@ -1,0 +1,3 @@
+#!/bin/bash
+find ./ -type f -printf "%p %f\n" | sort -k 2 | uniq -f 1 -D | cut -d' ' -f1
+exit

@@ -1,0 +1,28 @@
+#!/bin/bash
+function trash {
+if [[ -n "$USERNAME" && -d "$HOME" ]]; then
+#beesu expands variables before execution.
+	beesu "chown -R $USERNAME:$USERNAME $HOME/.local/share/Trash"
+	chmod -R u+rwx $HOME/.local/share/Trash
+else
+	echo "One or more of the required variables was not defined.  No action was taken."
+fi
+}
+function HELP {
+echo "Options
+	--[h]elp Display this message and exit.
+	--[t]rash Fix file ownership and permissions of you trash folder."
+}
+if [ $# -gt 0 ]
+then
+	for flist in `seq 1 $#`
+	do
+		case $1 in
+			-h | help | --help) HELP;;
+			-t | --trash) trash;;
+		esac
+		shift
+	done
+else
+	HELP
+fi
